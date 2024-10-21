@@ -38,13 +38,14 @@ class HMM(pt.nn.Module):
         self.emission = pt.nn.Parameter(emission)
         self.symbol_amnt, self.state_amnt = emission.shape
 
+        self.softmax = pt.nn.Softmax(dim=0)
         self._normalize()
 
 
     def _normalize(self):
         with pt.no_grad():
-            self.transition /= self.transition.sum(axis=0)
-            self.emission /= self.emission.sum(axis=0)
+            self.transition.copy_(self.softmax(self.transition))
+            self.emission.copy_(self.softmax(self.emission))
 
 
     def forward(self, x_seq, steps=1, state=None):
@@ -56,7 +57,7 @@ class HMM(pt.nn.Module):
 
         for x in x_seq.T:
             state = self.emission[x].T * state
-            state /= state.sum(axis=0)
+            state /= state.sum(dim=0)
             state = self.transition @ state
 
         pred = pt.zeros(len(x_seq), steps, self.symbol_amnt)
