@@ -30,9 +30,9 @@ class HMM(pt.nn.Module):
             raise Exception("You must state either transition or state_amnt.")
 
         if transition == None:
-            transition = pt.randn(state_amnt, state_amnt)
+            transition = pt.rand(state_amnt, state_amnt)
         if emission == None:
-            emission = pt.randn(symbol_amnt, state_amnt)
+            emission = pt.rand(symbol_amnt, state_amnt)
 
         self.transition = pt.nn.Parameter(transition)
         self.emission = pt.nn.Parameter(emission)
